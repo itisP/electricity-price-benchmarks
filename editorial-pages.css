@@ -1,0 +1,35 @@
+/* The three interior pages use the same reading width and type scale as the leaderboard. */
+body > :is(#epf-track-record, #epf-methodology, #epf-about) {
+  --gutter: max(5%, calc((100% - 76rem) / 2));
+  --hero-surface: #f5f8f5;
+  max-width: none;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+body > :is(#epf-track-record, #epf-methodology, #epf-about) > .mast {
+  padding-inline: var(--gutter);
+}
+
+body > :is(#epf-track-record, #epf-methodology, #epf-about) > .foot {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  margin-inline: var(--gutter);
+  padding: 1.625rem 0;
+  gap: .5rem 1.25rem;
+  color: var(--sub);
+  font-size: .8125rem;
+}
+
+body > :is(#epf-track-record, #epf-methodology, #epf-about) > .foot strong {
+  margin-inline-end: auto;
+  color: var(--ink);
+  font-weight: 550;
+}
+
+@media (max-width: 560px) {
+  body > :is(#epf-track-record, #epf-methodology, #epf-about) > .foot strong {
+    flex-basis: 100%;
+  }
+}

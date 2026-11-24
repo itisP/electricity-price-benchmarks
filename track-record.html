@@ -1,0 +1,722 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Follow electricity price forecasting models across benchmark windows. Compare their scores, rank changes and market coverage.">
+  <title>Track record | Power price model benchmarks</title>
+  <style>@media (prefers-reduced-motion: no-preference) { @view-transition { navigation: auto; } }
+html{color-scheme:light;background:white}body{margin:0;background:white}#epf-track-record{max-width:1280px;margin:0 auto}</style>
+  <style id="epf-track-styles">
+    #epf-track-record {
+      --ink:#172b24; --sub:#53645c; --green:#165e48; --line:#dbe4df; --wash:#f5f8f6;
+      --leader-width:35rem;
+      color-scheme:light; color:var(--ink); background:#fff; container-type:inline-size;
+      font:400 16px/1.48 var(--sans); isolation:isolate;
+    }
+    #epf-track-record *, #epf-track-record *::before, #epf-track-record *::after { box-sizing:border-box; }
+    #epf-track-record :where(h1,h2,h3,p,figure,ul,ol) { margin:0; }
+    #epf-track-record [hidden] { display:none !important; }
+    #epf-track-record .track-sr { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+    #epf-track-record a { color:var(--green); text-underline-offset:.22em; text-decoration-thickness:1px; }
+    #epf-track-record :focus-visible { outline:2px solid var(--green); outline-offset:3px; }
+    #epf-track-record :where(button,select) { font:inherit; }
+    #epf-track-record .mast { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:18px 5%; border-bottom:1px solid var(--line); }
+    #epf-track-record .brand { color:var(--ink); font-size:16px; line-height:1.45; font-weight:600; letter-spacing:-.04em; text-decoration:none; }
+    #epf-track-record .section-nav { display:flex; align-items:center; gap:clamp(14px,2.5cqw,32px); }
+    #epf-track-record .section-nav a { color:var(--sub); font-size:14px; text-decoration:none; white-space:nowrap; }
+    #epf-track-record .section-nav a:hover, #epf-track-record .section-nav [aria-current="page"] { color:var(--green); text-decoration:underline; }
+    #epf-track-record .section-nav [aria-current="page"] { font-weight:600; text-underline-offset:.34em; }
+    #epf-track-record main { min-width:0; }
+    #epf-track-record .track-hero {
+      display:grid; grid-template-columns:minmax(0,var(--leader-width)) minmax(0,1fr); align-items:start; align-content:start;
+      gap:clamp(1.5rem,3vw,3rem);
+      padding-inline:var(--gutter,5%); padding-block-end:clamp(2rem,4.5vw,4rem); background:var(--hero-surface,#f5f8f5);
+    }
+    body > #epf-track-record .track-hero .track-intro { display:block; padding:0; }
+    #epf-track-record :is(.track-overview,.track-performance) { min-width:0; }
+    #epf-track-record #track-empty-status { margin-top:1rem; color:var(--sub); }
+    #epf-track-record .track-market-label {
+      display:flex; flex-wrap:wrap; align-items:center; gap:.15rem .85rem; margin-top:1rem;
+      color:var(--sub); font-size:.875rem;
+    }
+    #epf-track-record .track-market-label select { inline-size:14.25em; max-inline-size:100%; field-sizing:fixed; white-space:nowrap; }
+    #epf-track-record .track-delivery { width:min(100%,var(--leader-width)); margin-top:clamp(1.5rem,2.5vw,2.25rem); }
+    #epf-track-record .track-block {
+      margin:0 var(--gutter,5%); padding:clamp(3rem,6vw,5rem) 0; scroll-margin-top:1.5rem;
+    }
+    #epf-track-record .track-block + .track-block { border-top:1px solid var(--line); }
+    body > #epf-track-record main :is(.track-performance,.track-block) h2 { font:var(--type-section); letter-spacing:var(--section-tracking); }
+    #epf-track-record .track-rank-panel { margin-top:clamp(18px,2.2cqw,28px); }
+    #epf-track-record .track-figure { position:relative; display:flex; min-width:0; flex-direction:column; overflow-x:auto; }
+    #epf-track-record .track-unit { display:flex; justify-content:space-between; align-items:baseline; gap:10px; min-height:18px; font-size:.875rem; color:var(--sub); margin:.5rem 0 .4rem; }
+    #epf-track-record .track-reading {
+      position:absolute; z-index:2; width:max-content; max-width:calc(100% - 1rem); padding:.2rem .45rem;
+      background:white; color:var(--ink); font-size:.8125rem; line-height:1.35; pointer-events:none;
+    }
+    #epf-track-record .track-reading:empty { display:none; }
+    #epf-track-record .track-plot { position:relative; flex:1 0 auto; min-width:0; min-height:clamp(14rem,22vw,20rem); touch-action:pan-y pinch-zoom; -webkit-user-select:none; user-select:none; }
+    #epf-track-record .track-plot svg { position:absolute; inset:0; width:100%; height:100%; overflow:visible; display:block; }
+    #epf-track-record .track-gridline { stroke:#dce5df; stroke-width:1; }
+    #epf-track-record .track-tick { fill:var(--sub); font:.8125rem var(--sans); font-variant-numeric:tabular-nums; }
+    #epf-track-record .track-month { font-size:.75rem; }
+    #epf-track-record .track-pending { fill:#61766a; }
+    #epf-track-record .track-guide { stroke:#769886; stroke-width:1; stroke-dasharray:3 4; pointer-events:none; }
+    #epf-track-record .track-target { position:absolute; top:0; height:100%; padding:0; background:transparent; border:0; border-radius:2px; cursor:crosshair; }
+    #epf-track-record .track-target:focus-visible { outline-offset:-1px; }
+    #epf-track-record .track-inspector { min-width:0; }
+    /* Overlaid window details reserve the tallest pane at the current width and type size. */
+    #epf-track-record .window-stack { display:grid; grid-template-columns:minmax(0,1fr); }
+    #epf-track-record .window-stack > * { grid-area:1 / 1; align-self:start; min-width:0; }
+    #epf-track-record .window-stack > [aria-hidden="true"] { visibility:hidden; }
+    #epf-track-record .track-window-date { color:var(--sub); font:400 12px/1.4 var(--sans); }
+    #epf-track-record .track-window-rows { list-style:none; padding:0; margin:13px 0 0; }
+    #epf-track-record .track-row { display:grid; grid-template-columns:12px 18px minmax(0,1fr) auto; align-items:center; gap:7px; min-height:38px; border-bottom:1px solid var(--line); font-size:13px; }
+    #epf-track-record .track-row:last-child { border-bottom:0; }
+    #epf-track-record .track-logo { display:block; width:17px; height:17px; object-fit:contain; }
+    #epf-track-record .track-row .track-model { min-width:0; overflow-wrap:anywhere; }
+    #epf-track-record .track-place { color:var(--sub); font-size:12px; font-weight:500; font-variant-numeric:tabular-nums; }
+    #epf-track-record .track-row[data-leader] .track-place { color:var(--green); font-weight:650; }
+    #epf-track-record .track-row[data-leader] .track-model, #epf-track-record .track-row[data-leader] .track-value { color:#004632; font-weight:600; }
+    #epf-track-record .track-value { font-variant-numeric:tabular-nums; font-size:12px; font-weight:500; }
+    #epf-track-record .track-symbol { display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--series); margin:0 2px; }
+    #epf-track-record .track-first { display:block; color:var(--sub); font-size:11px; font-weight:400; }
+    #epf-track-record .track-series path { fill:none; stroke:currentColor; stroke-width:1.6; stroke-linejoin:round; stroke-linecap:round; }
+    #epf-track-record .track-series .track-gap-line { stroke-dasharray:4 4; opacity:.55; }
+    #epf-track-record .track-series circle { fill:currentColor; stroke:white; stroke-width:1.1; }
+    #epf-track-record .track-leader path { stroke-width:3; }
+    #epf-track-record .track-series .track-muted { color:#748078; stroke-width:1.6; stroke-dasharray:1.5 3; }
+    #epf-track-record .track-leader circle { r:4.8px; }
+    #epf-track-record .track-pane-head { display:flex; gap:.75rem; justify-content:space-between; align-items:center; }
+    #epf-track-record .track-step { display:flex; }
+    #epf-track-record .track-step button {
+      display:grid; place-items:center; width:44px; height:44px; border:0; background:transparent;
+      color:var(--green); cursor:pointer;
+    }
+    #epf-track-record .track-step button::before { content:""; width:7px; height:7px; border:solid currentColor; border-width:0 1.6px 1.6px 0; transform:rotate(-45deg); }
+    #epf-track-record .track-step button[data-step="-1"]::before { transform:rotate(135deg); }
+    #epf-track-record .track-step button:disabled { opacity:.38; cursor:default; }
+    #epf-track-record .track-fold { margin-top:.5rem; border-top:1px solid var(--line); }
+    #epf-track-record .track-fold > summary {
+      display:flex; align-items:center; gap:.5rem; min-height:44px;
+      color:var(--green); font-size:.875rem; font-weight:500;
+    }
+    #epf-track-record .track-fold > summary::before { margin:0 .15rem; }
+    #epf-track-record .track-fold > summary .track-window-date { margin-inline-start:auto; text-align:right; }
+    #epf-track-record .track-fold > .window-stack { padding:0 0 .75rem; }
+    #epf-track-record .track-fold .track-window-rows {
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,18rem),1fr));
+      gap:0 1.5rem; margin:0;
+    }
+    #epf-track-record .track-fold .track-row { min-height:44px; border-bottom:0; }
+    @media (prefers-reduced-motion:no-preference) {
+      #epf-track-record .track-fold > summary::before { transition:transform 240ms ease-out; }
+      @supports selector(details::details-content) and (interpolate-size:allow-keywords) {
+        #epf-track-record .track-fold { interpolate-size:allow-keywords; }
+        #epf-track-record .track-fold::details-content {
+          block-size:0; opacity:0; overflow:clip;
+          transition:block-size 260ms ease-out, opacity 220ms ease-out, content-visibility 260ms allow-discrete;
+        }
+        #epf-track-record .track-fold[open]::details-content { block-size:auto; opacity:1; }
+      }
+    }
+    #epf-track-record #track-leaders :is(.track-leader-label,.track-window-date) { color:var(--sub); font:var(--type-label); }
+    #epf-track-record #track-leaders .track-window-rows { margin:0; }
+    #epf-track-record #track-leaders .track-row {
+      display:grid; grid-template-columns:minmax(0,1fr) max-content; align-items:baseline;
+      gap:clamp(1rem,2.5vw,2rem); padding-block:.25rem .125rem; border:0;
+    }
+    #epf-track-record #track-leaders .track-row + .track-row { margin-top:1rem; }
+    #epf-track-record #track-leaders :is(.track-model,.track-value) {
+      font:var(--type-result); letter-spacing:normal; font-variant-numeric:tabular-nums lining-nums;
+    }
+    #epf-track-record #track-leaders .track-model { color:var(--ink); }
+    #epf-track-record #track-leaders .track-value { color:var(--green); }
+    #epf-track-record .track-value, #epf-track-record .track-place { text-align:right; }
+
+    #epf-track-record .track-rank-panel .track-plot { min-height:clamp(14rem,20vw,19rem); }
+    #epf-track-record :is(.track-rank-note,.coverage-note) { max-width:68ch; margin-top:.65rem; color:var(--sub); font-size:1rem; }
+    #epf-track-record .coverage-note { margin-bottom:1.5rem; }
+    #epf-track-record table { width:100%; border-collapse:collapse; color:var(--ink); font-size:14px; font-variant-numeric:tabular-nums; }
+    #epf-track-record th,#epf-track-record td { border-bottom:1px solid var(--line); padding:8px 10px 8px 0; text-align:left; }
+    #epf-track-record th { font-weight:540; }
+    #epf-track-record thead th { color:var(--sub); font-size:13px; }
+    #epf-track-record td:nth-child(n+2), #epf-track-record th:nth-child(n+2) { text-align:right; }
+    #epf-track-record .coverage-scroll { overflow-x:auto; }
+    #epf-track-record .coverage-matrix { border-collapse:separate; border-spacing:0; }
+    #epf-track-record .coverage-matrix[data-scoped] { max-width:38rem; }
+    #epf-track-record .coverage-matrix :is(th,td) { min-width:72px; padding:14px 10px; text-align:right; vertical-align:middle; white-space:nowrap; }
+    #epf-track-record .coverage-matrix tr > :first-child { position:sticky; left:0; z-index:1; padding-left:0; padding-right:12px; text-align:left; background:white; }
+    #epf-track-record .coverage-matrix tbody tr:last-child > * { border-bottom:0; }
+    #epf-track-record .coverage-matrix th.coverage-name { min-width:85px; font-size:13px; line-height:1.3; white-space:normal; text-wrap:balance; }
+    #epf-track-record .coverage-total { color:var(--sub); font-size:12px; }
+    #epf-track-record .foot { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin:0 5%; padding:18px 0 24px; border-top:1px solid var(--line); font-size:13px; }
+    #epf-track-record .foot strong { font-weight:550; }
+    @container (max-width:780px) {
+      #epf-track-record .mast { flex-direction:column; align-items:flex-start; gap:5px; padding-block:13px; }
+      #epf-track-record .section-nav { flex-wrap:wrap; column-gap:16px; row-gap:0; }
+      #epf-track-record .section-nav a { padding-block:5px; }
+    }
+    @container (min-width:761px) and (max-width:1152px) {
+      #epf-track-record .track-hero { grid-template-columns:minmax(0,1fr); }
+      #epf-track-record .track-overview { display:flex; flex-wrap:wrap; align-items:center; gap:1.5rem clamp(1.5rem,3vw,3rem); }
+      #epf-track-record .track-intro { flex:1 1 max-content; min-width:0; align-self:start; }
+      #epf-track-record .track-delivery { flex:0 0 min(100%,var(--leader-width)); margin-top:0; }
+    }
+    @container (max-width:760px) {
+      #epf-track-record .track-hero {
+        grid-template-columns:minmax(0,1fr); gap:2rem;
+        padding-block-end:clamp(1.5rem,5vw,2.25rem);
+      }
+      #epf-track-record .track-delivery { margin-top:1.5rem; }
+      #epf-track-record .track-performance { width:100%; }
+    }
+    @container (max-width:720px) {
+      #epf-track-record .track-plot { min-height:195px; }
+      #epf-track-record .track-rank-panel .track-plot { min-height:190px; }
+      #epf-track-record .track-window-rows { margin-top:7px; }
+    }
+    @container (min-width:375px) and (max-width:720px) {
+      #epf-track-record .track-row { grid-template-columns:9px 17px minmax(0,1fr) auto; gap:4px; }
+      #epf-track-record .track-row .track-symbol { margin:0; }
+    }
+    @container (max-width:370px) { #epf-track-record .section-nav { display:grid; grid-template-columns:repeat(2,max-content); gap:2px 18px; } }
+    @media (pointer:coarse) {
+      #epf-track-record :is(.section-nav a,.foot a,select) { min-height:44px; align-content:center; }
+    }
+  </style>
+  <link rel="stylesheet" href="benchmark-controls.css?v=4566996c6861">
+  <link rel="stylesheet" href="benchmark-releases.css?v=79d90cc5484f">
+  <script defer src="benchmark-navigation.js?v=740635f75002"></script>
+  <link rel="stylesheet" href="editorial-pages.css?v=43d76673d30f">
+</head>
+<body>
+<section id="epf-track-record" aria-labelledby="track-title">
+  <header class="mast">
+    <a class="brand" href="index.html" data-track-nav>Power price model benchmarks</a>
+    <button type="button" class="site-menu-toggle" aria-label="Navigation menu" aria-expanded="false" aria-controls="site-sections"><span class="site-menu-icon" aria-hidden="true"></span></button>
+    <nav id="site-sections" class="section-nav" aria-label="Benchmark sections">
+      <a href="index.html" data-track-nav>Leaderboard</a>
+      <a href="track-record.html" aria-current="page" data-track-nav>Track record</a>
+      <a href="methodology.html" data-track-nav>Methodology</a>
+      <a href="about.html" data-track-nav>About</a>
+    </nav>
+  </header>
+  <main>
+    <div class="track-hero page-hero">
+      <div class="track-overview">
+        <header class="track-intro">
+          <h1 id="track-title" class="page-title">Track record</h1>
+          <label class="track-market-label" for="track-market">Market
+            <select class="epf-select" id="track-market"><option value="ALL">All markets</option><option value="FR">France</option><option value="DE-LU">Germany and Luxembourg</option><option value="HU">Hungary</option><option value="IT-North">Italy North</option><option value="NL">Netherlands</option><option value="PL">Poland</option><option value="ES">Spain</option><option value="NO2">Southwest Norway</option></select>
+          </label>
+          <p id="track-empty-status" hidden>No published windows are available.</p>
+        </header>
+        <div class="track-inspector track-delivery" role="group" aria-label="Delivery window scores">
+          <div id="track-leaders" class="window-stack" aria-live="polite" aria-atomic="true"></div>
+        </div>
+      </div>
+      <section class="track-performance" aria-labelledby="track-score-title">
+        <div class="track-pane-head">
+          <h2 id="track-score-title">Performance over time</h2>
+          <div class="track-step"><button type="button" data-step="-1" aria-label="Previous month"></button><button type="button" data-step="1" aria-label="Next month"></button></div>
+        </div>
+        <figure class="track-figure"><figcaption class="track-unit">Score<span class="track-reading"></span></figcaption><div class="track-plot" id="track-score-plot"></div></figure>
+        <details class="track-fold" id="track-score-details" hidden>
+          <summary>Monthly scores <span class="track-window-date"></span></summary>
+          <div class="window-stack" id="track-score-windows"></div>
+        </details>
+      </section>
+    </div>
+    <section class="track-block" aria-labelledby="track-rank-title">
+      <div class="track-pane-head">
+        <h2 id="track-rank-title">Rank stability</h2>
+        <div class="track-step"><button type="button" data-step="-1" aria-label="Previous month"></button><button type="button" data-step="1" aria-label="Next month"></button></div>
+      </div>
+      <p class="track-rank-note">Positions show every scored model each month. Grey lines show results excluded from the leaderboard ranking because of training exposure.</p>
+      <div class="track-rank-panel">
+        <figure class="track-figure"><figcaption class="track-unit">Score position<span class="track-reading"></span></figcaption><div class="track-plot" id="track-rank-plot"></div></figure>
+        <details class="track-fold" id="track-rank-details" hidden>
+          <summary>Monthly positions <span class="track-window-date"></span></summary>
+          <div class="window-stack" id="track-rank-windows"></div>
+        </details>
+      </div>
+    </section>
+    <section class="track-block" aria-labelledby="track-coverage-title">
+      <div class="coverage-heading"><h2 id="track-coverage-title">Market coverage</h2></div>
+      <p id="track-coverage-desc" class="coverage-note">Each cell shows scored days out of calendar days. Days with missing required data are excluded.</p>
+      <div class="coverage-scroll" tabindex="0" role="region" aria-label="Market coverage by bidding zone">
+        <table class="coverage-matrix" id="track-coverage" aria-labelledby="track-coverage-title" aria-describedby="track-coverage-desc"></table>
+      </div>
+    </section>
+  </main>
+  <footer class="foot"><strong>Power price model benchmarks</strong><a href="mailto:parth.goel@ouce.ox.ac.uk">Request data</a><a href="index.html#epf-leaderboard" data-track-nav>Explore the leaderboard →</a></footer>
+</section>
+<script src="benchmark-calendar.js"></script>
+<script src="benchmark-data.js?v=dc8c1e8a47de"></script>
+<script src="benchmark-makers.js"></script>
+<script src="benchmark-releases.js?v=1c641208ab17"></script>
+<script>
+(() => {
+  const root = document.getElementById('epf-track-record');
+  const data = window.EPF_BENCHMARK;
+  const picker = root.querySelector('#track-market');
+  const chartWindows = window.EPF_CALENDAR.monthlyVintages(data?.vintages ?? []);
+  if (!chartWindows.length) {
+    root.querySelector('#track-empty-status').hidden = false;
+    picker.disabled = true;
+    for (const panel of root.querySelectorAll('.track-delivery, .track-performance, .track-block')) panel.hidden = true;
+    return;
+  }
+  const ids = Object.keys(data.names);
+  const makers = window.EPF_MAKERS;
+  const releases = window.EPFReleases;
+  const palette = ['#004632','#317781','#697f54','#63766b','#405b50','#708277','#64776b','#6d7d70'];
+  // Stable model colours survive market and month changes.
+  const latest = chartWindows.at(-1);
+  const latestRanks = releases.eligibleRanks(latest.scopes.ALL?.points ?? {},latest,'ALL');
+  const referenceRank = id => latestRanks.get(id) ?? Number.MAX_SAFE_INTEGER;
+  const colourOrder = [...ids].sort((a,b)=>referenceRank(a)-referenceRank(b));
+  const colors = new Map(colourOrder.map((id,i) => [id,palette[i % palette.length]]));
+  const markets=new Set(chartWindows.flatMap(w=>Object.keys(w.scopes)));
+  for(const option of [...picker.options]) if(!markets.has(option.value)) option.remove();
+  for(const code of markets) if(![...picker.options].some(option=>option.value===code)) picker.add(new Option(code,code));
+  const query = new URLSearchParams(location.search);
+  const readPeriod = value => ['q3-2026','6m','1y','60d'].includes(value) ? value : 'latest';
+  let market = 'ALL', period = readPeriod(query.get('period'));
+  let selected = chartWindows.length - 1;
+  const chartSelections = new Map();
+  const chartNodes = [root.querySelector('#track-score-plot'), root.querySelector('#track-rank-plot')];
+  const navigation = new Map(Array.from(root.querySelectorAll('[data-track-nav]'), link => [link, link.getAttribute('href')]));
+  const dateLabel = new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'short',timeZone:'UTC'});
+  const shortDate = iso => dateLabel.format(new Date(iso+'T00:00:00Z'));
+  const finite = Number.isFinite;
+  const scoreText = x => (finite(x) ? (Math.abs(x)<0.05 ? 0 : x).toFixed(1) : '—');
+  const scope = w => w.scopes[market];
+  const eligibleMonthlyRanks = new Map();
+  const monthName = new Intl.DateTimeFormat('en-US',{month:'short',timeZone:'UTC'});
+  function monthLabel(month) {
+    const date = new Date(Date.UTC(Math.floor(month/12),month%12,1));
+    return monthName.format(date) + '-' + String(date.getUTCFullYear()).slice(-2);
+  }
+  const months = chartWindows.map(w => window.EPF_CALENDAR.monthIndex(w.end));
+  const monthCount = months.length ? Math.max(2,months.at(-1)-months[0]+1) : 0;
+  const monthTicks = Array.from({length:monthCount},(_,i)=>months[0]+i);
+  for (const plot of chartNodes) if (monthCount>12) plot.style.minWidth=(monthCount*31+50)+'px';
+  function node(tag,cls,text) {
+    const el = document.createElement(tag);
+    if (cls) el.className = cls;
+    if (text !== undefined) el.textContent = text;
+    return el;
+  }
+  function svgNode(tag,attrs,content) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg',tag);
+    for (const [key,value] of Object.entries(attrs)) el.setAttribute(key,value);
+    if(content !== undefined) el.textContent=content;
+    return el;
+  }
+  function logo(id) {
+    const maker = makers[id], img = node('img','track-logo');
+    if(!maker?.src) return node('span','track-logo');
+    img.src=maker.src; img.alt=maker.name; img.title=maker.name;
+    return img;
+  }
+  function seriesColor(id,month) {
+    return eligibleMonthlyRanks.get(month).has(id) ? colors.get(id) : '#748078';
+  }
+  function symbol(id,month) {
+    const tag=node('i','track-symbol');
+    tag.style.setProperty('--series',seriesColor(id,month)); tag.setAttribute('aria-hidden','true');
+    return tag;
+  }
+  const scoreWindows=root.querySelector('#track-score-windows');
+  const rankWindows=root.querySelector('#track-rank-windows');
+  const leaderWindows=root.querySelector('#track-leaders');
+  const monthLabels=root.querySelectorAll('.track-fold > summary .track-window-date');
+  const paneStacks=[leaderWindows,scoreWindows,rankWindows];
+  function buildPanes() {
+    for(const stack of paneStacks) stack.replaceChildren();
+    chartWindows.forEach((w,i)=>{
+      const points=scope(w)?.points ?? {}, eligible=eligibleMonthlyRanks.get(w);
+      const scored=ids.filter(id=>finite(points[id]?.composite)).sort((a,b)=>
+        points[b].composite-points[a].composite || data.names[a].localeCompare(data.names[b]));
+      const missing=ids.filter(id=>!finite(points[id]?.composite));
+      const positionCounts=new Map();
+      for(const id of scored) {
+        const position=points[id].compositeRank;
+        positionCounts.set(position,(positionCounts.get(position) || 0)+1);
+      }
+      const leaders=node('div'), leaderRows=node('ul','track-window-rows');
+      leaders.append(leaderRows);
+      for(const stack of [scoreWindows,rankWindows]) {
+        const showPosition=stack===rankWindows;
+        const panel=node('div'), rows=node('ul','track-window-rows');
+        panel.append(rows);
+        for(const id of showPosition ? [...scored,...missing] : scored) {
+          const point=points[id], row=node('li','track-row'), position=point?.compositeRank;
+          const officialRank=eligible.get(id);
+          row.dataset.model=id;
+          if (finite(officialRank)) row.dataset.rank=officialRank;
+          let value='—';
+          if(finite(point?.composite)) {
+            const level=releases.category(id,w,market);
+            if (level!=='none') row.title=(releases.description(level)+'. '+releases.note(id,w,market)).trim();
+            if (!showPosition) value=scoreText(point.composite);
+            else if (finite(position)) value=(positionCounts.get(position)>1?'Joint #':'#')+position;
+          } else {
+            row.title=w.runs?.[id]?.reason || 'No score in this market.';
+          }
+          const name=node('span','track-model',data.names[id]);
+          if(officialRank===1) {
+            row.setAttribute('data-leader','');
+            name.append(node('small','track-first','Highest eligible score'));
+          }
+          row.append(symbol(id,w),logo(id),name,showPosition ? node('span','track-place',value) : node('strong','track-value',value));
+          rows.append(row);
+          if (officialRank===1 && !showPosition) {
+            const result=row.cloneNode(false);
+            result.append(node('span','track-model',data.names[id]),node('strong','track-value',value));
+            leaderRows.append(result);
+          }
+        }
+        if (!showPosition && !scored.length) rows.append(node('li','track-window-date','No scores'));
+        panel.setAttribute('aria-hidden',String(i!==selected));
+        panel.inert=i!==selected;
+        stack.append(panel);
+      }
+      if (leaderRows.childElementCount) {
+        leaders.prepend(node('p','track-leader-label','Highest eligible score'));
+      } else {
+        const status=node('li','track-window-date',scored.length ? 'No ranked model' : 'No scores');
+        leaderRows.append(status);
+      }
+      leaders.setAttribute('aria-hidden',String(i!==selected));
+      leaders.inert=i!==selected;
+      leaderWindows.append(leaders);
+    });
+  }
+  function scoreAxis(values) {
+    const min=Math.min(...values), max=Math.max(...values);
+    const span=Math.max(2,max-min);
+    const desired=Math.max(1,span*1.1/4), power=10**Math.floor(Math.log10(desired));
+    const step=[1,2,5,10].find(n=>n*power>=desired)*power;
+    const low=Math.floor((min-span*.04)/step)*step, high=Math.ceil((max+span*.04)/step)*step;
+    const ticks=Array.from({length:Math.round((high-low)/step)+1},(_,i)=>Number((low+i*step).toFixed(6)));
+    return {low,high,ticks};
+  }
+  const steps=[...root.querySelectorAll('[data-step]')];
+  function updateMonthControls() {
+    for (const label of monthLabels) label.textContent=chartWindows[selected].label;
+    for (const button of steps) {
+      const index=selected+Number(button.dataset.step);
+      button.disabled=index<0 || index>=chartWindows.length;
+    }
+  }
+  function updateSelection(view) {
+    const month=chartWindows[selected], xx=view.x[selected];
+    const eligibleRanks=eligibleMonthlyRanks.get(month);
+    view.reading.textContent='';
+    view.line.setAttribute('x1',xx); view.line.setAttribute('x2',xx);
+    view.buttons.forEach((button,i)=>{
+      button.setAttribute('aria-pressed',String(i===selected));
+      button.tabIndex=i===selected?0:-1;
+    });
+    for (const series of view.series) {
+      const current=series.values[selected];
+      const leads = eligibleRanks.get(series.id)===1;
+      series.group.setAttribute('color',seriesColor(series.id,month));
+      series.group.classList.toggle('track-leader',leads);
+      if (leads) series.group.parentNode.appendChild(series.group);
+      if (!finite(current)) {
+        series.circle.setAttribute('visibility','hidden');
+      } else {
+        series.circle.removeAttribute('visibility');
+        series.circle.setAttribute('cx',xx);
+        series.circle.setAttribute('cy',view.y(current));
+      }
+    }
+  }
+  function revealMonth(view) {
+    const pane=view.plot.parentElement, xx=view.x[selected];
+    if (pane.scrollWidth<=pane.clientWidth) return;
+    if (xx<pane.scrollLeft+25) pane.scrollLeft=Math.max(0,xx-42);
+    else if (xx>pane.scrollLeft+pane.clientWidth-25) pane.scrollLeft=xx-pane.clientWidth+42;
+  }
+  function selectWindow(i,reveal=false) {
+    if(i<0 || i>=chartWindows.length || i===selected) return;
+    for(const stack of paneStacks) {
+      stack.children[selected].inert=true;
+      stack.children[selected].setAttribute('aria-hidden','true');
+      stack.children[i].inert=false;
+      stack.children[i].setAttribute('aria-hidden','false');
+    }
+    selected=i;
+    updateMonthControls();
+    for(const view of chartSelections.values()) {
+      updateSelection(view);
+      if (reveal) revealMonth(view);
+    }
+  }
+  function labelSeries(view, series) {
+    if (!view) return;
+    const month=chartWindows[selected];
+    view.reading.replaceChildren();
+    for (const {id} of series) {
+      if (view.reading.hasChildNodes()) view.reading.append(' · ');
+      view.reading.append(data.names[id]);
+      if (releases.category(id,month,market) !== 'none') {
+        view.reading.append(' · Exposure: ', releases.levelLabel(id,month,market));
+      }
+    }
+    if (!series.length) return;
+    const figure=view.plot.parentElement;
+    const x=view.plot.offsetLeft+view.x[selected], y=view.plot.offsetTop+view.y(series[0].values[selected]);
+    const limit=figure.scrollLeft+figure.clientWidth-view.reading.offsetWidth-4;
+    view.reading.style.left=Math.max(figure.scrollLeft+4,Math.min(x+7,limit))+'px';
+    view.reading.style.top=Math.max(0,y-view.reading.offsetHeight-8)+'px';
+  }
+  function labelLeaders(plot) {
+    const view=chartSelections.get(plot);
+    if (!view) return;
+    const ranks=eligibleMonthlyRanks.get(chartWindows[selected]);
+    labelSeries(view,view.series.filter(series=>ranks.get(series.id)===1 && finite(series.values[selected])));
+  }
+  document.addEventListener('keydown',event=>{
+    if (event.key==='Escape') for (const view of chartSelections.values()) labelSeries(view,[]);
+  });
+  for (const button of steps) {
+    const plot=button.closest('.track-performance') ? chartNodes[0] : chartNodes[1];
+    button.addEventListener('click',event=>{
+      selectWindow(selected+Number(button.dataset.step),true);
+      if (!event.detail) labelLeaders(plot);
+    });
+    button.addEventListener('blur',()=>labelSeries(chartSelections.get(plot),[]));
+  }
+  for (const plot of chartNodes) {
+    let gesture=null;
+    function inspect(event) {
+      const view=chartSelections.get(plot);
+      if (!view) return;
+      const bounds=plot.getBoundingClientRect();
+      const x=event.clientX-bounds.left, y=event.clientY-bounds.top;
+      const closest=view.x.reduce((best,point,i)=>Math.abs(point-x)<Math.abs(view.x[best]-x)?i:best,0);
+      selectWindow(closest,true);
+      let nearest=null, distance=event.pointerType==='touch'?18:10;
+      for (const s of view.series) {
+        const value=s.values[closest];
+        if (!finite(value)) continue;
+        const delta=Math.hypot(x-view.x[closest],y-view.y(value));
+        if(delta<distance) {nearest=s; distance=delta;}
+      }
+      labelSeries(view,nearest?[nearest]:[]);
+    }
+    plot.addEventListener('pointerdown',event=>{
+      if (event.pointerType==='mouse' || !event.isPrimary) return;
+      gesture={id:event.pointerId,x:event.clientX,y:event.clientY,dragging:false};
+      plot.setPointerCapture(event.pointerId);
+    });
+    plot.addEventListener('pointermove',event=>{
+      if(event.pointerType==='mouse') {inspect(event); return;}
+      if (gesture?.id!==event.pointerId) return;
+      if (!gesture.dragging) {
+        const dx=Math.abs(event.clientX-gesture.x), dy=Math.abs(event.clientY-gesture.y);
+        if (Math.max(dx,dy)<5) return;
+        if (dy>dx) { gesture=null; return; }
+        gesture.dragging=true;
+      }
+      inspect(event);
+    });
+    plot.addEventListener('pointerup',event=>{
+      if (gesture?.id===event.pointerId) { inspect(event); gesture=null; }
+    });
+    plot.addEventListener('pointerleave',event=>{
+      const view=chartSelections.get(plot);
+      if(event.pointerType==='mouse' && view) view.reading.textContent='';
+    });
+    plot.addEventListener('pointercancel',()=>{gesture=null;});
+    plot.addEventListener('lostpointercapture',event=>{ if (gesture?.id===event.pointerId) gesture=null; });
+    plot.addEventListener('focusout',event=>{
+      if (!plot.contains(event.relatedTarget)) labelSeries(chartSelections.get(plot),[]);
+    });
+  }
+  function drawChart(plot,isRank) {
+    const width=Math.floor(plot.getBoundingClientRect().width), height=plot.clientHeight;
+    if(width<90 || !height) return;
+    const restoreFocus=plot.contains(document.activeElement);
+    if(!chartWindows.length) {
+      plot.replaceChildren(node('p','track-window-date','No calendar-month results'));
+      return;
+    }
+    const metric=isRank ? 'compositeRank' : 'composite';
+    const readingFor=(w,id)=>scope(w)?.points?.[id]?.[metric];
+    const observed=ids.filter(id=>chartWindows.some(w=>finite(readingFor(w,id))));
+    plot.replaceChildren();chartSelections.delete(plot);
+    const values=chartWindows.flatMap(w=>observed.map(id=>readingFor(w,id)).filter(finite));
+    const labelWidth=String(Math.floor(Math.min(0,...values))).length*7+15;
+    const top=12, left=Math.max(width<480?31:42,labelWidth), right=width-(width<480?21:25);
+    const step=(right-left)/(monthCount-1), origin=left, bottom=height-27;
+    const maxRank=Math.max(...values);
+    const axis=!observed.length?{low:0,high:1,ticks:[]}:isRank?{low:1,high:Math.max(2,maxRank),ticks:Array.from({length:maxRank},(_,i)=>i+1)}:scoreAxis(values);
+    const lowY=bottom-(!isRank && axis.low>0 ? 18 : 0);
+    const highY=top+(!isRank && axis.high<0 ? 18 : 0);
+    const y=v=>isRank?top+(v-axis.low)/(axis.high-axis.low)*(bottom-top):lowY-(v-axis.low)/(axis.high-axis.low)*(lowY-highY);
+    const x=months.map(month=>origin+(month-months[0])*step);
+    const svg=svgNode('svg',{viewBox:`0 0 ${width} ${height}`,role:'img','aria-label':isRank?'Monthly score positions across all scored models. Position one is the highest score.':'Model scores by calendar month.'});
+    for(const t of axis.ticks) {
+      const yy=y(t);
+      svg.append(svgNode('line',{x1:left,y1:yy,x2:right,y2:yy,class:'track-gridline'}),
+                 svgNode('text',{x:left-11,y:yy+4,'text-anchor':'end',class:'track-tick'},(isRank?'#':'')+t));
+    }
+    if(!observed.length) {
+      svg.append(svgNode('text',{x:left+4,y:(top+bottom)/2,'text-anchor':'start',class:'track-tick'},'No scores'));
+    }
+    if(!isRank && observed.length) {
+      const cut=axis.low>0 ? bottom-9 : axis.high<0 ? top+9 : null;
+      const axisPath=cut===null ? `M${left} ${top}V${bottom}` : `M${left} ${top}V${cut-2.5} M${left} ${cut+2.5}V${bottom}`;
+      svg.append(svgNode('path',{d:axisPath,stroke:'#92a699',fill:'none','aria-hidden':'true'}));
+      if(cut!==null) svg.append(svgNode('path',{class:'axis-break',d:`M${left-3} ${cut-1}l6 -3 m-6 8l6 -3`,stroke:'#5e796a','stroke-width':1.2,'stroke-linecap':'round',fill:'none','aria-hidden':'true'}));
+    }
+    const line=svgNode('line',{x1:x[selected],x2:x[selected],y1:top-2,y2:bottom,class:'track-guide'});
+    const layer=svgNode('g',{});
+    svg.append(line,layer);
+    const series=[];
+    for(const id of observed) {
+      const group=svgNode('g',{class:'track-series','data-model':id});
+      const readings=chartWindows.map(w=>readingFor(w,id));
+      const solid=[], muted=[], bridges=[];
+      let last=-1;
+      readings.forEach((value,i)=>{
+        if(!finite(value)) return;
+        const segment=eligibleMonthlyRanks.get(chartWindows[i]).has(id) ? solid : muted;
+        const yy=y(value), pos=x[i]+' '+yy;
+        const connected=last!==-1 && months[i]===months[last]+1;
+        if (connected) {
+          const prevY=y(readings[last]), start='M'+x[last]+' '+prevY;
+          const prevSegment=eligibleMonthlyRanks.get(chartWindows[last]).has(id) ? solid : muted;
+          if (prevSegment===segment) {
+            segment.push(start+' L'+pos);
+          } else {
+            const middle=(x[last]+x[i])/2+' '+(prevY+yy)/2;
+            prevSegment.push(start+' L'+middle);
+            segment.push('M'+middle+' L'+pos);
+          }
+        } else {
+          if (!finite(readings[i+1]) || months[i+1]!==months[i]+1) segment.push('M'+(x[i]-1)+' '+yy+'h2');
+          if(last!==-1 && !isRank) bridges.push('M'+x[last]+' '+y(readings[last])+' L'+pos);
+        }
+        last=i;
+      });
+      if(bridges.length) group.append(svgNode('path',{class:'track-gap-line',d:bridges.join(' ')}));
+      group.append(svgNode('path',{'data-series':id,color:colors.get(id),d:solid.join(' ')}));
+      if(muted.length) group.append(svgNode('path',{class:'track-muted',d:muted.join(' ')}));
+      const circle=svgNode('circle',{r:3.3});
+      group.append(circle); layer.append(group);
+      series.push({id,group,circle,values:readings});
+    }
+    const labelEvery=Math.max(1,Math.ceil(43/step));
+    monthTicks.forEach((month,i)=>{
+      if(i!==monthTicks.length-1 && (i%labelEvery || (monthTicks.length-1-i)<labelEvery)) return;
+      svg.append(svgNode('text',{x:origin+i*step,y:bottom+18,'text-anchor':'middle',class:'track-tick track-month'},monthLabel(month)));
+    });
+    plot.append(svg);
+    const buttons=chartWindows.map((w,i)=>{
+      const from=Math.max(left-12, i===0?x[i]-step/2:(x[i-1]+x[i])/2, x[i]-step/2);
+      const to=Math.min(right+12, i===chartWindows.length-1?x[i]+step/2:(x[i]+x[i+1])/2, x[i]+step/2);
+      const b=node('button','track-target');
+      b.type='button';b.style.left=from+'px';b.style.width=(to-from)+'px';
+      b.setAttribute('aria-label',(isRank?'Score positions':'Scores')+' for '+w.label);
+      b.setAttribute('aria-pressed',String(i===selected));
+      b.addEventListener('focus',()=>{
+        selectWindow(i,true);
+        if (b.matches(':focus-visible')) labelLeaders(plot);
+      });
+      b.addEventListener('click',()=>selectWindow(i));
+      b.addEventListener('keydown',e=>{
+        const offset=e.key==='ArrowLeft'?-1:e.key==='ArrowRight'?1:0;
+        if(offset){e.preventDefault();buttons[Math.max(0,Math.min(i+offset,buttons.length-1))].focus();}
+      });
+      plot.append(b);return b;
+    });
+    const reading=plot.parentElement.querySelector('.track-reading');
+    const view={line,buttons,x,y,series,plot,reading};
+    chartSelections.set(plot,view);
+    updateSelection(view);
+    revealMonth(view);
+    if (restoreFocus) buttons[selected].focus({preventScroll:true});
+  }
+  const coverage = root.querySelector('#track-coverage');
+  const zones = [...picker.options].filter(option => option.value !== 'ALL');
+  const coverageHeader = coverage.createTHead().insertRow();
+  const vintageHeader = node('th','','Window ending');
+  vintageHeader.scope = 'col';
+  coverageHeader.append(vintageHeader);
+  for (const zone of zones) {
+    const header=node('th','coverage-name',zone.text);
+    header.scope='col';
+    header.dataset.zone=zone.value;
+    coverageHeader.append(header);
+  }
+  const coverageBody = coverage.createTBody();
+  for (const w of [...chartWindows].reverse()) {
+    const row = coverageBody.insertRow(), heading = node('th');
+    const dated = node('time','',shortDate(w.end) + ' ' + w.end.slice(0,4));
+    dated.dateTime = w.end;
+    dated.title = w.label;
+    heading.scope = 'row';
+    heading.append(dated);
+    row.append(heading);
+    for (const zone of zones) {
+      const result = w.scopes[zone.value], cell = row.insertCell();
+      cell.dataset.zone = zone.value;
+      if (!finite(result?.days) || !finite(result?.possibleZoneDays) || result.possibleZoneDays === 0) {
+        cell.textContent = '—';
+        cell.setAttribute('aria-label','No coverage available');
+        continue;
+      }
+      cell.append(String(result.days),node('span','coverage-total',' / ' + result.possibleZoneDays));
+      cell.setAttribute('aria-label',result.days + ' of ' + result.possibleZoneDays + ' days scored');
+    }
+  }
+  function renderMarket() {
+    coverage.toggleAttribute('data-scoped',market !== 'ALL');
+    for (const cell of coverage.querySelectorAll('[data-zone]')) {
+      cell.hidden = market !== 'ALL' && cell.dataset.zone !== market;
+    }
+    const p=new URLSearchParams();
+    if(market!=='ALL')p.set('market',market);
+    if(period!=='latest')p.set('period',period);
+    for(const [link,href] of navigation){
+      const [base,hash]=href.split('#');
+      link.setAttribute('href',base+(p.size?'?'+p:'')+(hash?'#'+hash:''));
+    }
+    for (const w of chartWindows) eligibleMonthlyRanks.set(w,releases.eligibleRanks(scope(w)?.points ?? {},w,market));
+    buildPanes();
+    updateMonthControls();
+    chartNodes.forEach((el,i)=>drawChart(el,i===1));
+  }
+  function setMarket(value,newPeriod) {
+    market=markets.has(value)?value:'ALL';
+    period=readPeriod(newPeriod);
+    picker.value=market;
+    renderMarket();
+  }
+  picker.addEventListener('change',()=>{
+    setMarket(picker.value,period);
+    if(window.top===window.self) {
+      const url=new URL(location.href);
+      if(market==='ALL')url.searchParams.delete('market');else url.searchParams.set('market',market);
+      try {if (url.href!==location.href) history.pushState(null,'',url);}catch { /* Some browsers limit updates to local file URLs. */ }
+    }
+  });
+  window.addEventListener('epf:track-market',e=>setMarket(e.detail?.market,e.detail?.period));
+  window.addEventListener('popstate',()=>{
+    const q=new URLSearchParams(location.search);setMarket(q.get('market'),q.get('period'));
+  });
+  setMarket(query.get('market'),period);
+  for (const fold of root.querySelectorAll('.track-fold')) fold.hidden=false;
+  const observer=new ResizeObserver(entries=>entries.forEach(({target})=>drawChart(target,target===chartNodes[1])));
+  chartNodes.forEach(el=>observer.observe(el));
+})();
+</script>
+</body>
+</html>

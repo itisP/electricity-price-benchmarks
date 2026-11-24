@@ -1,0 +1,295 @@
+:is(#epf-atlas, #epf-track-record, #epf-methodology, #epf-about) {
+  --serif: "Baskervville", "Baskerville", "Iowan Old Style", Georgia, serif;
+  --sans: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+  --type-title: 400 clamp(3.25rem, 1.6rem + 5.2vw, 6rem)/1.02 var(--serif);
+  --type-section: 400 clamp(2rem, 1.5rem + 1.5vw, 2.75rem)/1.12 var(--serif);
+  --type-result: 400 clamp(2.125rem, 1.25rem + 3.5vw, 3.375rem)/1.06 var(--sans);
+  --type-label: 400 clamp(1rem, 1.25vw, 1.125rem)/1.4 var(--sans);
+  --title-tracking: -.045em;
+  --section-tracking: -.033em;
+  --control-radius: 9px;
+  --control-border: #c7d6cd;
+}
+
+/* Keep the same field and disclosure affordances wherever the dashboard uses them. */
+:is(#epf-atlas, #epf-track-record) select.epf-select {
+  appearance: none;
+  box-sizing: border-box;
+  max-width: 100%;
+  min-height: 36px;
+  padding: 6px 20px 6px 1px;
+  border: 0;
+  border-radius: 0;
+  color: var(--green);
+  background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='m2 4 4 4 4-4' fill='none' stroke='%23446353' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 1px center;
+  font: 500 14px/1.35 var(--sans);
+  cursor: pointer;
+}
+:is(#epf-atlas, #epf-track-record) select.epf-select:enabled:hover {
+  text-decoration: underline;
+  text-underline-offset: .25em;
+}
+:is(#epf-atlas, #epf-track-record) select.epf-select:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+}
+:is(#epf-atlas, #epf-track-record) select.epf-select:disabled {
+  color: var(--sub);
+  cursor: default;
+}
+@media (pointer: fine) {
+  @supports (appearance: base-select) and selector(::picker(select)) {
+    :is(#epf-atlas, #epf-track-record) select.epf-select,
+    .epf-select::picker(select) { appearance: base-select; }
+    .epf-select::picker-icon { display: none; }
+    .epf-select::picker(select) {
+      margin-block: 4px;
+      padding: 4px;
+      border: 1px solid var(--control-border);
+      border-radius: var(--control-radius);
+      background: white;
+      box-shadow: 0 6px 16px rgb(20 52 36 / 9%);
+      color: #172b24;
+      font: 400 14px/1.35 var(--sans);
+    }
+    .epf-select option { min-height: 32px; padding: 6px 9px; border-radius: 4px; }
+    .epf-select option:checked { background: #e8f2ec; color: #104d35; font-weight: 600; }
+    .epf-select option:enabled:is(:hover, :focus-visible) { background: #f0f5f2; }
+    .epf-select option::checkmark { order: 1; margin-inline-start: auto; padding-inline-start: 8px; }
+  }
+}
+:is(#epf-atlas, #epf-track-record, #epf-methodology) details > summary {
+  list-style: none;
+  cursor: pointer;
+}
+:is(#epf-atlas, #epf-track-record, #epf-methodology) details > summary::-webkit-details-marker { display: none; }
+:is(#epf-atlas, #epf-track-record, #epf-methodology) details > summary::before {
+  content: "";
+  display: inline-block;
+  flex: none;
+  width: .43em;
+  height: .43em;
+  margin-inline: .08em .65em;
+  border: solid currentColor;
+  border-width: 0 1.5px 1.5px 0;
+  vertical-align: .14em;
+  transform: rotate(-45deg);
+}
+:is(#epf-atlas, #epf-track-record, #epf-methodology) details[open] > summary::before { transform: rotate(45deg); }
+@media (prefers-reduced-motion: no-preference) {
+  :is(#epf-atlas, #epf-track-record, #epf-methodology) summary::before { transition: transform 160ms ease-out; }
+}
+@media (pointer: coarse) {
+  :is(#epf-atlas, #epf-track-record) select.epf-select { min-height: 44px; font-size: 16px; }
+}
+@media (forced-colors: active) {
+  :is(#epf-atlas, #epf-track-record) select.epf-select { appearance: auto; background-image: none; }
+  .epf-select::picker-icon { display: inline; }
+}
+
+/* Pages share the same type and tab geometry on phones, including mobile Safari. */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scrollbar-gutter: stable;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-group(root) { animation-duration: 140ms; }
+}
+
+@media (max-width: 805px) {
+  body > :is(#epf-atlas, #epf-track-record, #epf-methodology, #epf-about) {
+    --phone-body: 1rem;
+    --phone-label: .875rem;
+    --phone-caption: .75rem;
+    font-size: var(--phone-body);
+    line-height: 1.45;
+
+    & > .mast {
+      display: flex;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      align-items: flex-start;
+      gap: 0;
+      padding: 12px 5% 3px;
+    }
+    & .mast .brand {
+      font: 600 .9375rem/1.45 var(--sans);
+      letter-spacing: -.04em;
+    }
+    & .mast .section-nav {
+      display: grid;
+      grid-template-columns: minmax(0,1fr) minmax(0,1fr) minmax(0,1.04fr) minmax(0,.52fr);
+      justify-content: normal;
+      align-items: center;
+      width: 100%;
+      max-width: 26.5rem;
+      gap: 0;
+    }
+    & .mast .section-nav a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+      min-height: 44px;
+      padding: 0;
+      font-size: var(--phone-label);
+      line-height: 1.45;
+      white-space: nowrap;
+    }
+    & .mast .section-nav a:first-child { justify-content: flex-start; }
+    & .mast .section-nav a:last-child { justify-content: flex-end; }
+    & :is(.bio, .origin, .method-copy, .method-equation), & .practice dd {
+      font-size: var(--phone-body);
+      line-height: 1.5;
+    }
+    & :is(.method-rules h3, .practice dt, .track-inspector h3, .ranking h3) {
+      font-size: var(--phone-body);
+      line-height: 1.3;
+    }
+    & :is(.track-market-label, .text-link, .method-jumps a, .featured-scope),
+    & .method-fold summary {
+      font-size: var(--phone-label);
+      line-height: 1.45;
+    }
+    & :is(.plot-scope, .track-unit, .track-window-date, .map-caption), & .scatter figcaption {
+      font-size: var(--phone-caption);
+      line-height: 1.45;
+    }
+    & .foot { font-size: .8125rem; line-height: 1.45; }
+    & select.epf-select { font-size: max(16px, 1rem); min-height: 44px; }
+  }
+}
+
+@media (max-width: 349px) {
+  body > :is(#epf-atlas, #epf-track-record, #epf-methodology, #epf-about) .mast .section-nav a {
+    font-size: .8125rem;
+  }
+}
+
+@container (max-width: 575px) {
+  #epf-methodology .method-jumps {
+    gap: 0 18px;
+    padding-block: 4px;
+  }
+  #epf-methodology .method-jumps a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+}
+
+/* All four pages share the homepage's title treatment. */
+:is(#epf-atlas, #epf-track-record, #epf-methodology, #epf-about) {
+  & main > .page-hero {
+    padding-block-start: clamp(2rem, 4.5vw, 4rem);
+  }
+  & main :is(.hero-title, .page-title) {
+    color: var(--ink);
+    font: var(--type-title);
+    letter-spacing: var(--title-tracking);
+    text-wrap: balance;
+  }
+  @container (max-width: 760px) {
+    & main > .page-hero {
+      padding-block-start: clamp(1.5rem, 5vw, 2.25rem);
+    }
+  }
+}
+
+@media (min-width: 806px) {
+  body > :is(#epf-atlas, #epf-track-record, #epf-methodology, #epf-about) .mast {
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 5%;
+    & .brand { font: 600 1rem/1.45 var(--sans); letter-spacing: -.04em; }
+    & .section-nav {
+      display: flex;
+      width: auto;
+      gap: clamp(14px, 2.1vw, 28px);
+      align-items: center;
+      font: 400 .875rem/1.45 var(--sans);
+    }
+    & .section-nav a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 36px;
+      padding: 0;
+      text-decoration: none;
+      text-underline-offset: .42em;
+    }
+    & .section-nav a:is(:hover, :focus-visible), & .section-nav [aria-current="page"] {
+      color: var(--green);
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+    }
+    & .section-nav [aria-current="page"] { font-weight: 600; }
+  }
+}
+/* The four section links remain available when JavaScript is disabled. */
+.site-menu-toggle { display: none; }
+
+@media (max-width: 805px) and (scripting: enabled) {
+  body > :is(#epf-atlas, #epf-track-record, #epf-methodology, #epf-about) .mast:has(.site-menu-toggle) {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 5px 5%;
+  }
+  .mast .site-menu-toggle {
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    color: var(--green);
+    background: transparent;
+    border: 0;
+    border-radius: var(--control-radius);
+    cursor: pointer;
+  }
+  .site-menu-toggle:focus-visible { outline: 2px solid currentColor; }
+  .site-menu-toggle[aria-expanded="true"] { background: var(--wash, #f1f6f3); }
+  .site-menu-icon, .site-menu-icon::before, .site-menu-icon::after {
+    display: block;
+    width: 22px;
+    height: 2px;
+    border-radius: 2px;
+    background: currentColor;
+  }
+  .site-menu-icon { position: relative; }
+  .site-menu-icon::before, .site-menu-icon::after { content: ""; position: absolute; left: 0; }
+  .site-menu-icon::before { top: -6px; }
+  .site-menu-icon::after { top: 6px; }
+  body > :is(#epf-atlas, #epf-track-record, #epf-methodology, #epf-about) .mast .site-menu-toggle + .section-nav {
+    display: none;
+    position: absolute;
+    inset: calc(100% - 1px) 5% auto auto;
+    width: min(15rem, 90%);
+    box-sizing: border-box;
+    padding: 5px;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: var(--control-radius);
+    box-shadow: 0 8px 24px rgb(21 48 38 / 12%);
+  }
+  body > :is(#epf-atlas, #epf-track-record, #epf-methodology, #epf-about) .mast .site-menu-toggle[aria-expanded="true"] + .section-nav { display: block; }
+  body > :is(#epf-atlas, #epf-track-record, #epf-methodology, #epf-about) .mast .site-menu-toggle + .section-nav a {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 12px;
+    min-height: 44px;
+    border-radius: 4px;
+  }
+  .site-menu-toggle + .section-nav a[aria-current="page"] { background: #f0f5f2; }
+}

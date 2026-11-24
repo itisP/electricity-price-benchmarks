@@ -1,0 +1,6 @@
+.epf-exposure-level {
+  color:var(--sub, #53645c);
+  white-space:nowrap;
+}
+.epf-exposure-level[data-exposure="medium"] { color:#814600; }
+.epf-exposure-level[data-exposure="high"] { color:#9d2034; }

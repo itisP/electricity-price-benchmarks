@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="See when the European power price benchmark sets its forecast cutoff, which inputs models receive and how their predictions are scored.">
+  <title>Forecast Methodology | Power price model benchmarks</title>
+  <style>@media (prefers-reduced-motion: no-preference) { @view-transition { navigation: auto; } }
+html{color-scheme:light;background:#fff}body{margin:0;background:#fff}#epf-methodology{max-width:1280px;margin:auto}</style>
+  <style id="epf-methodology-styles">
+    @media (prefers-reduced-motion:no-preference) {
+      html { scroll-behavior:smooth; }
+    }
+    #epf-methodology {
+      --ink:#172b24; --sub:#53645c; --green:#165e48; --line:#dbe4df; --wash:#f2f7f4;
+      color-scheme:light; container-type:inline-size; isolation:isolate;
+      background:#fff; color:var(--ink); font:400 16px/1.5 var(--sans);
+    }
+    #epf-methodology *, #epf-methodology *::before, #epf-methodology *::after { box-sizing:border-box; }
+    #epf-methodology :where(h1,h2,h3,h4,p,figure,dl,dd) { margin:0; }
+    #epf-methodology [hidden] { display:none !important; }
+    #epf-methodology a { color:var(--green); text-decoration-thickness:1px; text-underline-offset:.24em; }
+    #epf-methodology :focus-visible { outline:2px solid var(--green); outline-offset:3px; }
+    #epf-methodology :where(button,input,select,textarea) { font:inherit; }
+    #epf-methodology summary { cursor:pointer; }
+    #epf-methodology .mast { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:18px 5%; border-bottom:1px solid var(--line); }
+    #epf-methodology .brand { color:var(--ink); font-size:16px; font-weight:600; line-height:1.45; letter-spacing:-.04em; text-decoration:none; }
+    #epf-methodology .section-nav { display:flex; align-items:center; gap:clamp(14px,2.5cqw,32px); }
+    #epf-methodology .section-nav a { color:var(--sub); font-size:14px; line-height:1.45; text-decoration:none; white-space:nowrap; }
+    #epf-methodology .section-nav a:hover, #epf-methodology .section-nav [aria-current="page"] { color:var(--green); text-decoration:underline; }
+    #epf-methodology .section-nav [aria-current="page"] { font-weight:600; text-underline-offset:.34em; }
+    #epf-methodology { font-variant-numeric:tabular-nums lining-nums; }
+    #epf-methodology main { padding:0; }
+    #epf-methodology main header.method-intro {
+      display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); align-items:start;
+      gap:clamp(2rem,6vw,6rem); padding-inline:var(--gutter,5%); padding-block-end:clamp(3rem,7vw,6rem);
+      background:var(--hero-surface,#f5f8f5);
+    }
+    #epf-methodology .method-intro .method-copy { max-width:40ch; margin-top:1.25rem; }
+    #epf-methodology .method-equation { display:flex; align-self:center; align-items:center; justify-content:center; gap:clamp(.65rem,1.5vw,1.3rem); color:var(--green); }
+    #epf-methodology .equation-value { display:flex; align-items:center; gap:.5rem; white-space:nowrap; font:400 1.5rem/1.1 var(--sans); }
+    #epf-methodology .equation-value strong { font-weight:400; }
+    #epf-methodology .equation-fraction { display:grid; text-align:center; max-width:23rem; }
+    #epf-methodology .equation-terms { display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1.35fr); align-items:center; gap:.75rem; padding:.5rem 0 .8rem; border-bottom:1px solid currentColor; font-size:1rem; line-height:1.35; }
+    #epf-methodology .equation-divisor { padding:.55rem 0 0; font-size:1.15rem; }
+    #epf-methodology .method-reader {
+      display:grid; grid-template-columns:minmax(10rem,.34fr) minmax(0,1fr); align-items:start;
+      gap:clamp(2rem,6vw,6rem); margin:0 var(--gutter,5%); padding-block:clamp(3rem,5.7vw,5rem);
+    }
+    #epf-methodology .method-jumps { display:grid; align-self:start; position:sticky; top:1.5rem; }
+    #epf-methodology .method-jumps a { width:fit-content; display:flex; align-items:center; min-height:2.45rem; padding:.25rem 0; color:var(--sub); font-size:.9375rem; text-decoration:none; }
+    #epf-methodology .method-jumps a:is(:hover,:focus-visible,[aria-current="location"]) { color:var(--green); text-decoration:underline; text-underline-offset:.28em; }
+    #epf-methodology .method-content { min-width:0; }
+    #epf-methodology .method-block, #epf-methodology .method-title, #epf-methodology #method-score { scroll-margin-block-start:1.5rem; }
+    #epf-methodology .method-block + .method-block, #epf-methodology .method-meta { margin-top:clamp(3.5rem,6vw,5.5rem); }
+    #epf-methodology .method-block:focus, #epf-methodology #method-score:focus { outline:none; }
+    #epf-methodology .method-block:focus-visible .method-title, #epf-methodology #method-score:focus-visible h1 { text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:.15em; }
+    #epf-methodology .method-title { color:var(--ink); font:var(--type-section); letter-spacing:var(--section-tracking); }
+    #epf-methodology .method-copy { max-width:68ch; color:var(--sub); font-size:1rem; line-height:1.58; }
+    #epf-methodology .method-title + .method-copy { margin-top:.8rem; }
+    #epf-methodology .method-copy + .method-fold, #epf-methodology .method-copy p + .method-fold { margin-top:1.2rem; }
+    #epf-methodology .method-copy strong { color:var(--ink); font-weight:600; }
+    #epf-methodology .method-fold { border-bottom:1px solid var(--line); }
+    #epf-methodology .method-fold > summary { color:var(--green); padding:.8rem 0; font-size:1rem; font-weight:500; line-height:1.45; }
+    #epf-methodology .method-fold > summary:is(:hover,:focus-visible) { text-decoration:underline; text-underline-offset:.24em; }
+    #epf-methodology .method-fold[open] { padding-bottom:1rem; }
+    #epf-methodology .method-fold p + p { margin-top:.65rem; }
+    #epf-methodology .method-meta { display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:2rem; padding-top:2rem; border-top:1px solid var(--line); }
+    #epf-methodology .method-meta .method-block { margin:0; }
+    #epf-methodology .method-meta .method-title { font:550 .9375rem/1.4 var(--sans); letter-spacing:0; }
+    #epf-methodology .method-meta :is(.method-copy,time) { display:block; margin-top:.4rem; font-size:.9375rem; }
+    #epf-methodology .method-update time { color:var(--sub); }
+    #epf-methodology .foot { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:9px 20px; margin:0 5%; padding:18px 0 24px; border-top:1px solid var(--line); color:var(--sub); font-size:13px; }
+    #epf-methodology .foot strong { color:var(--ink); font-weight:550; }
+    #epf-methodology .forecast-axis { margin-top:clamp(24px,3.2cqw,40px); }
+    #epf-methodology .forecast-days { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)) 0; margin-bottom:8px; }
+    #epf-methodology .forecast-days span { position:relative; width:max-content; font-size:14px; font-weight:600; }
+    #epf-methodology .forecast-days span:last-child { justify-self:end; }
+    #epf-methodology .forecast-days span::after {
+      content:""; position:absolute; left:0; top:100%; height:8px; border-left:1px solid #92a99b;
+    }
+    #epf-methodology .forecast-days span:last-child::after { left:auto; right:0; }
+    #epf-methodology .forecast-prices { display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1fr); }
+    #epf-methodology .forecast-prices > div { display:grid; align-content:center; padding:10px clamp(6px,1.4cqw,18px); text-align:center; }
+    #epf-methodology .forecast-prices strong { font-size:15px; font-weight:600; line-height:1.3; }
+    #epf-methodology .forecast-prices span { font-size:13px; line-height:1.4; }
+    #epf-methodology .forecast-history { background:#deeee4; color:#164e3b; border-top:2px solid #729982; }
+    #epf-methodology .forecast-target { background:#e7ece9; color:var(--ink); border-top:2px solid #b3bcb7; }
+    #epf-methodology .forecast-gate { text-align:center; color:var(--sub); font-size:13px; }
+    #epf-methodology .forecast-gate::before { content:""; display:block; width:0; height:13px; margin:0 auto 3px; border-left:1px solid currentColor; }
+    #epf-methodology .forecast-gate strong { color:var(--ink); font-weight:600; }
+    #epf-methodology .forecast-inputs { margin-top:clamp(20px,2.6cqw,32px); }
+    #epf-methodology .forecast-inputs h3 { margin:0 0 8px; font-size:14px; font-weight:600; }
+    #epf-methodology .forecast-inputs dl { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px 20px; }
+    #epf-methodology .forecast-inputs dl > div { border-top:1px solid var(--line); padding-top:6px; }
+    #epf-methodology .forecast-inputs dt { font-size:14px; font-weight:600; }
+    #epf-methodology .forecast-inputs dd { color:var(--sub); font-size:13px; line-height:1.45; }
+    #epf-methodology .release-calendar { margin-top:clamp(1.75rem,3vw,2.5rem); }
+    #epf-methodology .release-header, #epf-methodology .release-row {
+      display:grid; grid-template-columns:clamp(6.6rem,20%,10.5rem) minmax(0,1fr) 6.5rem; column-gap:1.1rem; align-items:center;
+    }
+    #epf-methodology .release-row { position:relative; }
+    #epf-methodology .release-header { color:var(--sub); font-size:.8125rem; font-weight:500; }
+    #epf-methodology :is(.release-name,.release-date) { font:400 .9375rem/1.4 var(--sans); letter-spacing:normal; }
+    #epf-methodology .release-date { color:var(--ink); text-align:right; white-space:nowrap; }
+    #epf-methodology .release-axis { position:relative; height:26px; }
+    #epf-methodology .release-year { position:absolute; top:0; left:var(--position); padding-left:5px; }
+    #epf-methodology .release-rows { list-style:none; padding:0; margin:0; }
+    #epf-methodology .release-name { display:flex; align-items:center; min-height:44px; cursor:pointer; }
+    #epf-methodology .release-track { position:relative; align-self:stretch; background-image:var(--year-guides); }
+    #epf-methodology .release-track::before { content:""; position:absolute; inset:50% 0 auto; height:1px; background:#e0e7e3; }
+    #epf-methodology .release-point {
+      position:absolute; top:50%; left:var(--position); transform:translate(-50%,-50%); width:44px; height:44px;
+      border:0; padding:0; background:transparent; color:var(--green); cursor:pointer; touch-action:manipulation;
+    }
+    #epf-methodology .release-point::before {
+      content:""; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+      width:10px; height:10px; border-radius:50%; background:currentColor;
+    }
+    #epf-methodology :is(.release-point,.release-name) { -webkit-tap-highlight-color:transparent; }
+    #epf-methodology .release-point:focus-visible { outline:0; }
+    #epf-methodology .release-point:focus-visible::before { outline:2px solid var(--green); outline-offset:4px; }
+    #epf-methodology .release-point:hover::before,
+    #epf-methodology .release-point[aria-expanded="true"]::before { box-shadow:0 0 0 4px #d6e7dd; }
+    #epf-methodology .release-popover {
+      position:absolute; z-index:1; inset-block-end:100%; width:min(14rem,100%);
+      display:flex; align-items:center; justify-content:space-between; gap:8px; padding:4px 6px 4px 12px;
+      border:1px solid var(--line); border-radius:var(--control-radius); background:white; box-shadow:0 4px 16px #20392b18; line-height:1.35;
+    }
+    #epf-methodology .release-popover[data-below] { inset-block-start:100%; inset-block-end:auto; }
+    #epf-methodology .release-basis { display:block; color:var(--sub); font-size:12px; }
+    #epf-methodology .release-popover a {
+      display:grid; place-items:center; flex:none; min-height:44px; padding-inline:6px; border-radius:var(--control-radius);
+      color:var(--green); font:550 13px/1.3 var(--sans); white-space:nowrap;
+    }
+    #epf-methodology .release-popover a:hover { background:var(--wash); }
+    #epf-methodology .exposure-legend { max-width:67ch; margin-top:1.3rem; }
+    #epf-methodology .exposure-legend h3 { margin:0 0 .65rem; color:var(--sub); font-size:.875rem; font-weight:500; }
+    #epf-methodology .exposure-legend dl { display:grid; gap:.7rem; }
+    #epf-methodology .exposure-legend dl > div { display:grid; grid-template-columns:5.25rem minmax(0,1fr); align-items:baseline; gap:.35rem; }
+    #epf-methodology .exposure-legend dd { color:var(--ink); font-size:.9375rem; line-height:1.5; }
+    @container (max-width:805px) {
+      #epf-methodology .mast { align-items:flex-start; flex-direction:column; gap:6px; padding-block:13px; }
+      #epf-methodology .section-nav { flex-wrap:wrap; column-gap:14px; row-gap:0; }
+      #epf-methodology .section-nav a { padding-block:5px; }
+      #epf-methodology main header.method-intro { grid-template-columns:1fr; gap:2.2rem; }
+      #epf-methodology .method-equation { justify-content:start; max-width:31rem; }
+      #epf-methodology .method-reader { grid-template-columns:minmax(0,1fr); gap:2.5rem; padding-top:1.4rem; }
+      #epf-methodology nav.method-jumps { position:static; display:flex; flex-wrap:wrap; gap:0 1.25rem; padding:0 0 1rem; border-bottom:1px solid var(--line); }
+      #epf-methodology nav.method-jumps a { min-height:2.75rem; }
+    }
+    @container (max-width:610px) {
+      #epf-methodology .release-header, #epf-methodology .release-row { grid-template-columns:minmax(5.8rem,28%) minmax(0,1fr) 5.3rem; column-gap:.375rem; }
+      #epf-methodology :is(.release-name,.release-date) { font-size:.875rem; }
+      #epf-methodology .release-header { font-size:.75rem; }
+      #epf-methodology .release-year { padding-left:0; }
+      #epf-methodology .forecast-inputs dl { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      #epf-methodology .forecast-prices strong { font-size:14px; }
+      #epf-methodology .equation-value { font-size:1.25rem; }
+      #epf-methodology .equation-terms { gap:.45rem; font-size:.9375rem; }
+    }
+    @media (max-height:540px) {
+      #epf-methodology .method-jumps { position:static; }
+    }
+    @container (max-width:450px) {
+      #epf-methodology .section-nav { column-gap:10px; }
+      #epf-methodology .equation-terms { display:block; text-wrap:balance; }
+      #epf-methodology .equation-terms > span:nth-child(2) { margin-inline:.3em; }
+    }
+    @container (max-width:370px) { #epf-methodology .section-nav { display:grid; grid-template-columns:repeat(2,max-content); gap:2px 18px; } }
+    @media (pointer:coarse) {
+      #epf-methodology :is(.section-nav a,.method-jumps a,.foot a,.method-fold summary) { display:inline-flex; align-items:center; min-height:44px; }
+      #epf-methodology .method-fold summary { display:list-item; align-content:center; }
+    }
+  </style>
+  <link rel="stylesheet" href="benchmark-controls.css?v=4566996c6861">
+  <link rel="stylesheet" href="benchmark-releases.css?v=79d90cc5484f">
+  <script defer src="benchmark-navigation.js?v=740635f75002"></script>
+  <link rel="stylesheet" href="editorial-pages.css?v=43d76673d30f">
+</head>
+<body>
+<section id="epf-methodology" aria-labelledby="epf-methodology-title">
+  <header class="mast">
+    <a class="brand" href="index.html">Power price model benchmarks</a>
+    <button type="button" class="site-menu-toggle" aria-label="Navigation menu" aria-expanded="false" aria-controls="site-sections"><span class="site-menu-icon" aria-hidden="true"></span></button>
+    <nav id="site-sections" class="section-nav" aria-label="Benchmark sections">
+      <a href="index.html">Leaderboard</a>
+      <a href="track-record.html">Track record</a>
+      <a href="methodology.html" aria-current="page">Methodology</a>
+      <a href="about.html">About</a>
+    </nav>
+  </header>
+  <main>
+    <header class="method-intro page-hero" id="method-score" tabindex="-1">
+      <div>
+        <h1 id="epf-methodology-title" class="page-title">Forecast methodology</h1>
+        <p class="method-copy">The Score gives equal weight to two improvements over a similar-day forecast. One rewards lower price error. The other rewards capturing battery revenue the baseline would have missed.</p>
+      </div>
+      <div class="method-equation" role="math" aria-label="Score = (price error reduction % + battery revenue shortfall recovered %) ÷ 2">
+        <span class="equation-value" aria-hidden="true"><strong>Score</strong> =</span>
+        <span class="equation-fraction" aria-hidden="true">
+          <span class="equation-terms"><span>price error reduction %</span><span>+</span><span>battery revenue shortfall recovered %</span></span>
+          <span class="equation-divisor">2</span>
+        </span>
+      </div>
+    </header>
+    <div class="method-reader">
+      <nav class="method-jumps" aria-label="On this page">
+        <a href="#method-score-detail">Scoring methodology</a>
+        <a href="#method-releases">Training exposure</a>
+        <a href="#method-cutoff">Model cut-off</a>
+        <a href="#method-timing">Forecast timing</a>
+        <a href="#method-source">Data source</a>
+        <a href="#method-evidence">Benchmark data</a>
+        <a href="#method-history">Last update</a>
+      </nav>
+      <div class="method-content">
+        <section class="method-block method-split" id="method-score-detail" tabindex="-1" aria-labelledby="method-score-title">
+          <h2 class="method-title" id="method-score-title">Scoring methodology</h2>
+          <div class="method-copy">
+            <p>We compare each model with the naïve forecast on the same market-days. We pool price errors and battery trading margins across the selected markets and months before calculating the Score.</p>
+            <details class="method-fold">
+              <summary>Naïve forecast</summary>
+              <p>The similar-day baseline copies a previously cleared price for each quarter-hour. For delivery on Tuesday through Friday, it uses the previous day (D−1). For Saturday through Monday, it uses the same day a week earlier (D−7). It matches prices by local clock time, accounting for clock changes.</p>
+            </details>
+            <details class="method-fold">
+              <summary>Price error</summary>
+              <p>Mean absolute error (MAE) is the average absolute difference between the model’s median price forecast and the cleared price, in €/MWh. Error reduction is 100 × (1 − model MAE ÷ naïve MAE).</p>
+            </details>
+            <details class="method-fold">
+              <summary>Revenue capture and the two-hour battery</summary>
+              <p>We schedule a price-taking <strong>1 MW / 2 MWh battery</strong> on each model’s median forecast and settle that schedule at the cleared prices. The battery has 90% round-trip efficiency, starts and ends each day half full and can discharge up to one equivalent full cycle per day.</p>
+              <p>Capture is 100 × realised trading margin ÷ margin with perfect knowledge of prices, using identical constraints. If naïve captures 60% and a model captures 80%, the leaderboard shows <strong>80% capture</strong>. The Score credits the model with recovering half the remaining opportunity, (80 − 60) ÷ (100 − 60) = <strong>50%</strong>.</p>
+              <p>The simulation covers day-ahead arbitrage only. It excludes intraday and balancing trades, fees, imbalance costs and battery degradation.</p>
+            </details>
+            <details class="method-fold">
+              <summary>How models are ranked</summary>
+              <p>For a multi-month rank, a model must complete every contributing month with the same checkpoint. We rank unrounded scores from highest to lowest. Exact ties share a rank.</p>
+              <p>The leaderboard ranks models with None or Medium training exposure. It shows each High-exposure model’s score with a dash in the rank column. <a href="#method-releases">Training exposure rules</a></p>
+            </details>
+          </div>
+        </section>
+        <section class="method-block" id="method-releases" tabindex="-1" aria-labelledby="method-releases-title">
+          <div class="method-split">
+            <h2 class="method-title" id="method-releases-title">Training exposure</h2>
+            <p class="method-copy">We compare each model’s cut-off with the selected scoring period to flag possible overlap with its training data. The same model can have different exposure levels in different months.</p>
+          </div>
+          <div class="exposure-legend" aria-labelledby="exposure-legend-title">
+            <h3 id="exposure-legend-title">Legend</h3>
+            <dl>
+              <div><dt><span class="epf-exposure-level" data-exposure="none">None</span></dt><dd>Training cut-off is before the scoring period begins.</dd></div>
+              <div><dt><span class="epf-exposure-level" data-exposure="medium">Medium</span></dt><dd>Up to 15% of scored days fall before the cut-off, or the model uses entirely synthetic training data.</dd></div>
+              <div><dt><span class="epf-exposure-level" data-exposure="high">High</span></dt><dd>More than 15% of scored days fall before the cut-off.</dd></div>
+            </dl>
+          </div>
+        </section>
+        <section class="method-block" id="method-cutoff" tabindex="-1" aria-labelledby="method-cutoff-title">
+          <div class="method-split">
+            <h2 class="method-title" id="method-cutoff-title">Model cut-off</h2>
+            <p class="method-copy">When a training cut-off is unpublished, we use a dated archive of the training data or the date of the tested weights. Hover over or select a dot to see the date and its source.</p>
+          </div>
+          <div class="release-calendar">
+            <div class="release-header" aria-hidden="true" hidden><span>Model</span><div class="release-axis"></div></div>
+            <ul class="release-rows" aria-label="Model cut-off dates"><li class="method-copy">Model cut-off dates are currently unavailable.</li></ul>
+          </div>
+        </section>
+        <section class="method-block" id="method-timing" tabindex="-1" aria-labelledby="method-gate-title">
+          <figure id="method-gate-figure" aria-labelledby="method-gate-title">
+            <figcaption class="method-split">
+              <h2 class="method-title" id="method-gate-title">Forecast timing</h2>
+              <p class="method-copy">We use public day-ahead forecasts of demand, wind and solar. The archived forecasts can include updates made after bidding closes.</p>
+            </figcaption>
+            <div class="forecast-axis" role="group" aria-label="Electricity price timeline. Each day starts at midnight.">
+              <div class="forecast-days"><span>D−2</span><span>D−1</span><span>D</span><span>D+1</span></div>
+              <div class="forecast-prices">
+                <div class="forecast-history" id="method-time-inputs"><strong>Cleared price history</strong><span>D−1 prices through midnight, set on D−2</span></div>
+                <div class="forecast-target" id="method-time-results"><strong>Forecast prices</strong><span>For delivery on D</span></div>
+              </div>
+              <p class="forecast-gate" id="method-time-gate"><strong>Bids close at noon</strong> on D−1 (Brussels time)</p>
+            </div>
+            <details class="method-fold forecast-inputs">
+              <summary>Inputs on D−1</summary>
+              <dl>
+                <div><dt>Gas</dt><dd>D−2 TTF price final shortly after 06:00</dd></div>
+                <div><dt>Demand</dt><dd>Forecast for D due by 10:00</dd></div>
+                <div><dt>Carbon</dt><dd>Latest EU allowance auction price available by noon</dd></div>
+                <div><dt>Wind and solar</dt><dd>18:00 snapshot for D</dd></div>
+              </dl>
+            </details>
+          </figure>
+        </section>
+        <section class="method-block method-split" id="method-source" tabindex="-1" aria-labelledby="method-fairness">
+          <h2 class="method-title" id="method-fairness">Data source</h2>
+          <div class="method-copy">
+            <p>ENTSO-E supplies electricity data for all eight bidding zones. The European Energy Exchange (EEX) publishes the gas and carbon prices. For gaps in the gas series, we use the same index from Gasunie Transport Services.</p>
+            <details class="method-fold">
+              <summary>Electricity prices and forecasts</summary>
+              <p>We use cleared day-ahead prices (A44), day-ahead demand forecasts (A65), and wind and solar generation forecasts (A69). The D−2 auction sets prices for every quarter-hour of D−1, through midnight. The D−1 auction sets the prices for D that we use for scoring. We match each price to its delivery quarter in the bidding zone’s local time. <a href="https://transparency.entsoe.eu/" target="_blank" rel="noopener">ENTSO-E Transparency Platform ↗</a></p>
+              <p>ENTSO-E requires the first day-ahead demand forecast at least two hours before the auction closes and updates when demand changes significantly. Its day-ahead wind and solar series retains the latest forecast available at 18:00 on D−1. The archived versions therefore cannot establish exactly what a forecaster saw at noon. <a href="https://transparencyplatform.zendesk.com/hc/en-us/articles/16647979768084-Actual-Total-Load-Day-ahead-Per-Bidding-Zone-6-1-A-6-1-B" target="_blank" rel="noopener">Demand publication schedule ↗</a> · <a href="https://transparencyplatform.zendesk.com/hc/en-us/articles/16648445340180-Generation-Forecasts-for-Wind-and-Solar-14-1-D" target="_blank" rel="noopener">Wind and solar publication schedule ↗</a></p>
+            </details>
+            <details class="method-fold">
+              <summary>Gas and carbon prices</summary>
+              <p>We use the final Dutch TTF neutral gas price for gas day D−2. EEX publishes it shortly after that gas day ends at 06:00 on D−1. Gasunie Transport Services supplies the same index for dates missing from the EEX archive. <a href="https://www.eex.com/en/markets/natural-gas/gas-market-transparency" target="_blank" rel="noopener">EEX gas index ↗</a> · <a href="https://www.gasunietransportservices.nl/en/shipper-trader/terms-and-conditions/neutral-gas-price-ngp" target="_blank" rel="noopener">Gasunie index definition ↗</a></p>
+              <p>For carbon, we use the price from the latest successful EU emissions allowance auction. An auction on the electricity bidding day qualifies only if a record saved by noon already contains its result. Otherwise, we use the previous auction price. <a href="https://www.eex.com/en/market-data/market-data-hub/environmentals/eex-eua-primary-auction-spot-download" target="_blank" rel="noopener">EEX carbon auctions ↗</a></p>
+            </details>
+            <details class="method-fold">
+              <summary>How missing data affects coverage</summary>
+              <p>If a bidding zone lacks a required historical price or a demand, wind or solar forecast for any delivery quarter, we skip that day for every model. Gaps in historical demand, wind and solar forecasts stay marked as missing. A missing delivery price affects scoring only.</p>
+            </details>
+          </div>
+        </section>
+        <div class="method-meta">
+          <section class="method-block method-split" id="method-evidence" tabindex="-1" aria-labelledby="method-evidence-title">
+            <h2 class="method-title" id="method-evidence-title">Benchmark data</h2>
+            <div class="method-copy">
+              <p>For any data requests, please contact me <a href="mailto:parth.goel@ouce.ox.ac.uk" aria-label="Email Parth Goel about a data request">here</a>.</p>
+            </div>
+          </section>
+          <section class="method-block method-update" id="method-history" tabindex="-1" aria-labelledby="method-history-title">
+            <h2 class="method-title" id="method-history-title">Last update</h2>
+            <time datetime="2026-11-20">20 Nov 2026</time>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer class="foot"><strong>Power price model benchmarks</strong><a href="index.html#epf-leaderboard">Explore the leaderboard →</a></footer>
+</section>
+<script src="benchmark-data.js?v=dc8c1e8a47de"></script>
+<script src="benchmark-releases.js?v=1c641208ab17"></script>
+<script>
+(() => {
+  const method = document.getElementById('epf-methodology');
+  const releases = window.EPFReleases;
+  const names = window.EPF_BENCHMARK?.names ?? {};
+  const entries = Object.entries(releases?.models ?? {})
+    .map(([id, model]) => ({id, name:names[id] ?? id, exposure:releases.exposureSource(model)}))
+    .filter(entry => entry.exposure)
+    .sort((a,b) => a.exposure.date.localeCompare(b.exposure.date) || a.name.localeCompare(b.name));
+  if (entries.length) {
+    const calendar = method.querySelector('.release-calendar');
+    const axis = calendar.querySelector('.release-axis');
+    const rows = calendar.querySelector('.release-rows');
+    calendar.querySelector('.release-header').hidden = false;
+    rows.replaceChildren();
+    const first = new Date(entries[0].exposure.date + 'T00:00:00Z');
+    const last = new Date(entries[entries.length-1].exposure.date + 'T00:00:00Z');
+    const start = Date.UTC(first.getUTCFullYear(), 0);
+    const end = Date.UTC(last.getUTCFullYear()+1, 0);
+    const position = day => (day-start)/(end-start)*100 + '%';
+    const guides = [];
+    for (let year = first.getUTCFullYear(); year <= last.getUTCFullYear(); year++) {
+      const x = position(Date.UTC(year, 0));
+      const tick = document.createElement('span');
+      tick.className = 'release-year';
+      tick.style.setProperty('--position', x);
+      tick.textContent = year;
+      axis.append(tick);
+      guides.push('transparent '+x+', #dce6df '+x+', #dce6df calc('+x+' + 1px), transparent calc('+x+' + 1px)');
+    }
+    calendar.style.setProperty('--year-guides','linear-gradient(to right,'+guides.join(',')+')');
+    let openPoint = null;
+    let pinned = false;
+    function positionPopover() {
+      if (!openPoint) return;
+      const popover = document.getElementById(openPoint.getAttribute('aria-controls'));
+      const button = openPoint.getBoundingClientRect();
+      const row = openPoint.closest('.release-row').getBoundingClientRect();
+      const left = button.left - row.left + (button.width - popover.offsetWidth) / 2;
+      popover.style.insetInlineStart = Math.max(0, Math.min(row.width - popover.offsetWidth, left)) + 'px';
+      const middle = button.top + button.height / 2;
+      const viewport = window.visualViewport;
+      const above = middle - (viewport?.offsetTop ?? 0);
+      const below = (viewport?.height ?? document.documentElement.clientHeight) - above;
+      popover.toggleAttribute('data-below', above < popover.offsetHeight + 20 && below > above);
+    }
+    function closePoint() {
+      if (!openPoint) return;
+      document.getElementById(openPoint.getAttribute('aria-controls')).hidden = true;
+      openPoint.setAttribute('aria-expanded','false');
+      openPoint = null;
+      pinned = false;
+    }
+    for (const {id, name, exposure} of entries) {
+      const row = document.createElement('li');
+      row.className = 'release-row';
+      const label = document.createElement('label');
+      label.className = 'release-name';
+      label.htmlFor = 'release-point-'+id;
+      label.textContent = name;
+      const track = document.createElement('div');
+      track.className = 'release-track';
+      track.style.setProperty('--position',position(Date.parse(exposure.date+'T00:00:00Z')));
+      const point = document.createElement('button');
+      point.type = 'button';
+      point.id = label.htmlFor;
+      point.className = 'release-point';
+      point.setAttribute('aria-expanded','false');
+      const popover = document.createElement('div');
+      popover.id = 'release-detail-'+id;
+      popover.className = 'release-popover';
+      popover.hidden = true;
+      point.setAttribute('aria-controls',popover.id);
+      const time = document.createElement('time');
+      time.className = 'release-date';
+      time.dateTime = exposure.date;
+      time.textContent = releases.formatDate(exposure.date);
+      point.setAttribute('aria-label',name+', '+exposure.label+', '+time.textContent);
+      const basis = document.createElement('span');
+      basis.className = 'release-basis';
+      basis.textContent = exposure.label;
+      const source = document.createElement('a');
+      source.href = exposure.url;
+      source.target = '_blank';
+      source.rel = 'noopener';
+      source.textContent = 'Source ↗';
+      source.setAttribute('aria-label','Source for '+name+', '+exposure.label.toLowerCase()+', '+time.textContent+' (opens in a new tab)');
+      popover.append(basis,source);
+      function showPoint() {
+        if (openPoint === point) return;
+        closePoint();
+        popover.hidden = false;
+        point.setAttribute('aria-expanded','true');
+        openPoint = point;
+        positionPopover();
+      }
+      point.addEventListener('pointerenter',event => {
+        if (event.pointerType !== 'touch') showPoint();
+      });
+      point.addEventListener('focus',showPoint);
+      point.addEventListener('click',() => {
+        if (openPoint === point && pinned) return closePoint();
+        showPoint();
+        pinned = true;
+      });
+      row.addEventListener('pointerleave',() => {
+        if (openPoint === point && !pinned && !row.contains(document.activeElement)) closePoint();
+      });
+      track.append(point);
+      row.append(label,track,time,popover);
+      rows.append(row);
+    }
+    function dismissOutside(event) {
+      if (openPoint && !openPoint.closest('.release-row').contains(event.target)) closePoint();
+    }
+    window.addEventListener('resize',positionPopover);
+    document.addEventListener('scroll',positionPopover,{capture:true,passive:true});
+    document.addEventListener('pointerdown',dismissOutside);
+    document.addEventListener('focusin',dismissOutside);
+    document.addEventListener('keydown',event => {
+      if (event.key === 'Escape' && openPoint) {
+        if (openPoint.closest('.release-row').contains(document.activeElement)) openPoint.focus({preventScroll:true});
+        closePoint();
+      }
+    });
+  }
+  const jumpNav = method.querySelector('.method-jumps');
+  const jumps = Array.from(jumpNav.querySelectorAll('a'));
+  const sections = jumps.map(link => document.getElementById(link.hash.slice(1)));
+  function markJump(id) {
+    for (const link of jumps) {
+      if (link.hash === '#' + id) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    }
+  }
+  function sectionForHash() {
+    const target = document.getElementById(location.hash.slice(1));
+    return target?.closest('.method-block') || (target?.closest('#method-score') ? sections[0] : null);
+  }
+  function revealFragment(hash) {
+    const target = document.getElementById(hash.slice(1));
+    let fold = target?.closest('details:not([open])');
+    if (!fold) return;
+    while (fold) {
+      fold.open = true;
+      fold = fold.parentElement?.closest('details:not([open])');
+    }
+    return target;
+  }
+  function markReadingPosition() {
+    const viewport = document.documentElement.clientHeight;
+    const readingLine = Math.min(240, viewport * .35);
+    let current = sections[0];
+    for (const section of sections) {
+      if (section.getBoundingClientRect().top > readingLine) break;
+      current = section;
+    }
+    // The last two links share a row on wide screens. A deep link near the
+    // footer can also reach the end of the document before its heading reaches the top.
+    if (window.scrollY + viewport >= document.documentElement.scrollHeight - 2) {
+      const linked = sectionForHash();
+      const rect = linked?.getBoundingClientRect();
+      if (rect && rect.top >= 0 && rect.top < viewport) current = linked;
+      else current = sections.at(-2);
+    }
+    markJump(current.id);
+  }
+  let pendingFrame = 0;
+  function queueReadingPosition() {
+    if (pendingFrame) return;
+    pendingFrame = requestAnimationFrame(() => {
+      pendingFrame = 0;
+      markReadingPosition();
+    });
+  }
+  function markHash() {
+    // Direct arrivals can precede the browser's fragment scroll on page load.
+    revealFragment(location.hash)?.scrollIntoView({block:'start'});
+    const section = sectionForHash();
+    if (section) markJump(section.id);
+    else markReadingPosition();
+  }
+  method.addEventListener('click',event => {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
+    const link = event.target.closest('a[href^="#"]');
+    if (link) revealFragment(link.hash);
+  });
+  window.addEventListener('scroll',queueReadingPosition,{passive:true});
+  window.addEventListener('resize',queueReadingPosition);
+  method.addEventListener('toggle',queueReadingPosition,true);
+  window.addEventListener('hashchange',markHash);
+  markHash();
+
+  const routes = new Map(Array.from(method.querySelectorAll('.brand, .section-nav a, .foot a[href^="index.html"]'), link => [link,link.getAttribute('href')]));
+  function carryScope(market, period) {
+    const q = new URLSearchParams();
+    if (market && market !== 'ALL') q.set('market',market);
+    if (['q3-2026','6m','1y','60d'].includes(period)) q.set('period',period);
+    for (const [link,route] of routes) {
+      const [path,hash] = route.split('#');
+      link.setAttribute('href', path + (q.size ? '?' + q : '') + (hash ? '#' + hash : ''));
+    }
+  }
+  const query = new URLSearchParams(location.search);
+  carryScope(query.get('market'),query.get('period'));
+  method.addEventListener('epf:method-scope', event => carryScope(event.detail.market,event.detail.period));
+  const published = window.EPF_BENCHMARK?.published;
+  if (published) {
+    const time = method.querySelector('#method-history time');
+    time.dateTime = published;
+    time.textContent = new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'}).format(new Date(published+'T00:00:00Z'));
+  }
+})();
+</script>
+</body>
+</html>
