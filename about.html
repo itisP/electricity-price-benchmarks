@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Meet Parth Goel, the analyst behind Power price model benchmarks. Learn how he funds the project, chooses models and keeps placements independent.">
+  <meta name="description" content="Meet Parth Goel, who runs Power price model benchmarks, an independent leaderboard comparing AI forecasts of European electricity prices.">
   <title>About | Power price model benchmarks</title>
   <style>@media (prefers-reduced-motion: no-preference) { @view-transition { navigation: auto; } }
 html{color-scheme:light;background:white}body{margin:0;background:white}#epf-about{max-width:1280px;margin:0 auto}</style>
@@ -24,34 +24,20 @@ html{color-scheme:light;background:white}body{margin:0;background:white}#epf-abo
     #epf-about .section-nav a:hover, #epf-about .section-nav [aria-current="page"] { color:var(--green); text-decoration:underline; }
     #epf-about .section-nav [aria-current="page"] { font-weight:600; text-underline-offset:.34em; }
     #epf-about .about-intro {
-      display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-      align-items:start; gap:clamp(2rem,6vw,6rem);
-      padding-inline:var(--gutter,5%); padding-block-end:clamp(4rem,8vw,7rem);
+      display:grid; grid-template-columns:minmax(0,1fr) auto;
+      grid-template-areas:"title portrait" "story portrait";
+      align-items:start; gap:clamp(1.25rem,2vw,2rem) clamp(2rem,6vw,6rem);
+      padding-inline:var(--gutter,5%); padding-block-end:clamp(2.75rem,5vw,4.5rem);
       background:var(--hero-surface,#f5f8f5);
     }
-    #epf-about .about-intro h1 { max-width:12ch; text-wrap:balance; }
-    #epf-about .project-story { min-width:0; max-width:48ch; padding-top:.4rem; }
+    #epf-about .about-intro h1 { grid-area:title; }
+    #epf-about .project-story { grid-area:story; min-width:0; max-width:56ch; }
     #epf-about .origin { color:var(--ink); font-size:clamp(1rem,1.5vw,1.2rem); line-height:1.6; }
-    #epf-about .author { margin-top:1.25rem; }
-    #epf-about .author summary {
-      display:flex; align-items:center; gap:.6rem; width:fit-content; min-height:44px;
-      color:var(--green); font-weight:550; list-style:none; cursor:pointer;
-    }
-    #epf-about .author summary::-webkit-details-marker { display:none; }
-    #epf-about .author summary::before {
-      content:""; width:.5rem; height:.5rem; margin-inline:.12rem .06rem;
-      border:solid currentColor; border-width:0 1.5px 1.5px 0; transform:rotate(-45deg);
-    }
-    #epf-about .author[open] summary::before { transform:rotate(45deg); }
-    #epf-about .author summary:hover { text-decoration:underline; text-underline-offset:.25em; }
-    #epf-about summary:focus-visible { outline:2px solid var(--green); outline-offset:3px; }
-    #epf-about .author-profile {
-      display:grid; grid-template-columns:minmax(0,1fr) clamp(4.5rem,7vw,6rem);
-      gap:0 1.25rem; align-items:start; margin:.4rem 0 0;
-    }
-    #epf-about .bio { color:var(--sub); line-height:1.55; }
-    #epf-about .portrait { grid-area:1/2/3/3; width:100%; }
+    #epf-about .portrait { grid-area:portrait; justify-self:end; width:clamp(8rem,15vw,12rem); }
     #epf-about .portrait img { width:100%; height:auto; display:block; }
+    #epf-about .about-me { margin-top:1.75rem; }
+    #epf-about .about-me h2 { font:var(--type-label); font-weight:600; color:var(--ink); }
+    #epf-about .bio { margin-top:.35rem; color:var(--sub); line-height:1.55; }
     #epf-about .text-link { display:inline-flex; width:fit-content; align-items:center; min-height:44px; font-size:.9375rem; font-weight:500; }
     #epf-about .text-link span, #epf-about .foot a span { display:none; }
     #epf-about .guidelines {
@@ -59,26 +45,17 @@ html{color-scheme:light;background:white}body{margin:0;background:white}#epf-abo
       align-items:start; padding:clamp(3rem,6vw,5rem) var(--gutter,5%);
     }
     #epf-about .guidelines h2 { font:var(--type-section); letter-spacing:var(--section-tracking); }
-    #epf-about .funding-note { margin-top:.8rem; color:var(--sub); }
-    #epf-about .practices { display:grid; gap:1.8rem; max-width:52ch; }
-    #epf-about .practice h3 { font:var(--type-label); }
-    #epf-about .practice p { margin-top:.35rem; color:var(--sub); line-height:1.55; }
-    #epf-about .practice .text-link { margin-top:.2rem; }
+    #epf-about .notes { max-width:52ch; }
+    #epf-about .contact-note { margin-top:.5rem; color:var(--sub); font-size:.9375rem; }
     #epf-about .foot {
       display:flex; align-items:center; flex-wrap:wrap; gap:.4rem 1.25rem;
       margin:0 var(--gutter,5%); padding:1.625rem 0; border-top:1px solid var(--line); color:var(--sub); font-size:.8125rem;
     }
     #epf-about .foot strong { margin-inline-end:auto; color:var(--ink); font-weight:550; }
-    @media (prefers-reduced-motion:no-preference) {
-      #epf-about .author summary::before { transition:transform 220ms ease-out; }
-    }
     @container (max-width:760px) {
-      #epf-about .about-intro, #epf-about .guidelines { grid-template-columns:minmax(0,1fr); gap:1.75rem; }
-      #epf-about .about-intro { padding-block-end:clamp(2.75rem,9vw,4rem); }
-      #epf-about .project-story { padding:0; }
-      #epf-about .guidelines { padding-block:clamp(2.5rem,7vw,3.5rem); }
-      #epf-about .author-profile { column-gap:.875rem; }
-      #epf-about .practices { gap:1.5rem; }
+      #epf-about .about-intro { grid-template-areas:"title portrait" "story story"; gap:1.25rem .75rem; }
+      #epf-about .portrait { width:clamp(3.5rem,16vw,6.5rem); }
+      #epf-about .guidelines { grid-template-columns:minmax(0,1fr); gap:1rem; padding-block:clamp(2.5rem,7vw,3.5rem); }
     }
     @container (max-width:560px) { #epf-about .foot strong { flex-basis:100%; } }
     @media (pointer:coarse) { #epf-about :is(.section-nav a,.foot a) { display:inline-flex; align-items:center; min-height:44px; } }
@@ -101,34 +78,24 @@ html{color-scheme:light;background:white}body{margin:0;background:white}#epf-abo
     </header>
     <main>
       <section class="about-intro page-hero" aria-labelledby="epf-about-title">
-        <h1 id="epf-about-title" class="page-title">Behind the benchmark</h1>
+        <h1 id="epf-about-title" class="page-title">Hi! I’m Parth</h1>
+        <figure class="portrait"><img src="parth-portrait.webp" width="768" height="768" alt="An illustrated portrait of Parth Goel, smiling."></figure>
         <div class="project-story">
-          <p class="origin">I was curious about how good AI models have gotten at forecasting electricity prices. So I started comparing their forecasts and checking what a battery could earn by following them.</p>
-          <details class="author">
-            <summary>Hi! I'm Parth</summary>
-            <div class="author-profile">
-              <p class="bio">I’m a DPhil researcher at the University of Oxford and a Principal Analyst at S&amp;P Global, where I cover European power markets.</p>
-              <figure class="portrait"><img src="parth-portrait.webp" width="768" height="768" alt="An illustrated portrait of Parth Goel, smiling."></figure>
-              <a class="text-link" href="https://www.geog.ox.ac.uk/graduate/research/pgoel.html" target="_blank" rel="noopener">My Academic Profile <span aria-hidden="true">↗</span></a>
-            </div>
-          </details>
+          <p class="origin">I was curious how good AI models have become at forecasting electricity prices, so I set up this leaderboard to compare their forecasts and let others benchmark their own models.</p>
+          <section class="about-me" aria-labelledby="epf-about-me-title">
+            <h2 id="epf-about-me-title">About me</h2>
+            <p class="bio">I’m a DPhil researcher at the University of Oxford and a Principal Analyst at S&amp;P Global, where I cover European power markets.</p>
+            <a class="text-link" href="https://www.geog.ox.ac.uk/graduate/research/pgoel.html" target="_blank" rel="noopener">My academic profile <span aria-hidden="true">↗</span></a>
+          </section>
         </div>
       </section>
       <section class="guidelines" aria-labelledby="epf-about-policy-title">
         <header>
-          <h2 id="epf-about-policy-title">Benchmark guidelines</h2>
-          <p class="funding-note">No run is sponsored!</p>
+          <h2 id="epf-about-policy-title">A few notes on benchmarking</h2>
         </header>
-        <div class="practices">
-          <section class="practice">
-            <h3>Funding and affiliations</h3>
-            <p>I run this in my own time as a personal project. It receives no external funding. Neither the University of Oxford nor S&amp;P Global is involved in running, funding or endorsing it.</p>
-          </section>
-          <section class="practice">
-            <h3>How I choose models</h3>
-            <p>I choose published, pretrained models that can use the same market inputs. All eight on the roster come from external developers.</p>
-            <a class="text-link" href="methodology.html">Methodology <span aria-hidden="true">→</span></a>
-          </section>
+        <div class="notes">
+          <p>No run is sponsored. This is a personal project!</p>
+          <p class="contact-note">Questions or advice? <a href="mailto:parth.goel@ouce.ox.ac.uk">Get in touch</a>.</p>
         </div>
       </section>
     </main>
